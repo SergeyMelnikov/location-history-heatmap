@@ -1,0 +1,78 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Heatmap</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="floating-panel">
+    <div class="control">
+        <div class="subject">Radius <span id=radius>?</span></div>
+        <button onclick="change('radius', 1)">Up</button>
+        <button onclick="change('radius', -1)">Down</button>
+    </div>
+    <div class="control">
+        <div class="subject">Intensity <span id=maxIntensity>?</span></div>
+        <button onclick="change('maxIntensity', 1)">Up</button>
+        <button onclick="change('maxIntensity', -1)">Down</button>
+    </div>
+    <div class="control">
+        <div class="subject">Opacity <span id=opacity>?</span></div>
+        <button onclick="change('opacity', 1)">Up</button>
+        <button onclick="change('opacity', -1)">Down</button>
+    </div>
+</div>
+<div id="map"></div>
+<script src="data.js"></script>
+<script>
+    let map, heatmap;
+
+    function refreshPanels() {
+        document.getElementById("radius").innerText = heatmap.get("radius");
+        document.getElementById("opacity").innerText = heatmap.get("opacity");
+        document.getElementById("maxIntensity").innerText = heatmap.get("maxIntensity");
+    }
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 5,
+            center: {lat: 55, lng: 20},
+            mapTypeId: 'roadmap'
+        });
+
+
+        const points = data.map((p) => {
+            return new google.maps.LatLng(p[0] * 1e-7, p[1] * 1e-7);
+        });
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+            data: points,
+            map: map,
+            maxIntensity: 1,
+            radius: 5,
+            opacity: .6,
+        });
+
+        refreshPanels();
+    }
+
+    function change(name, direction) {
+        let oldValue = heatmap[name];
+        let newValue;
+        if (direction > 0) {
+            newValue = oldValue * 1.5;
+        } else {
+            newValue = oldValue / 1.5;
+        }
+        newValue = Math.round(newValue * 100) / 100;
+        console.log(name, direction, oldValue, newValue);
+        heatmap.set(name, newValue);
+        refreshPanels();
+    }
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_ToVJVrBtGcARCWc2j7JG9y-Gc9VZHfk&libraries=visualization&callback=initMap">
+</script>
+</body>
+</html>

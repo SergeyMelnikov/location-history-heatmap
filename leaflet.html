@@ -1,0 +1,66 @@
+<html>
+<head>
+    <title>Heatmap</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="floating-panel">
+    <div class="control">
+        <div class="subject">Radius <span id=radiusNum>?</span></div>
+        <button onclick="change('radius', 1)">Up</button>
+        <button onclick="change('radius', -1)">Down</button>
+    </div>
+    <div class="control">
+        <div class="subject">Blur <span id=blurNum>?</span></div>
+        <button onclick="change('blur', 1)">Up</button>
+        <button onclick="change('blur', -1)">Down</button>
+    </div>
+    <div class="control">
+        <div class="subject">Threshold <span id=maxNum>?</span></div>
+        <button onclick="change('max', 1)">Up</button>
+        <button onclick="change('max', -1)">Down</button>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<script src="data.js"></script>
+<script>
+    const map = L.map('map').setView([55, 20], 5);
+
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {attribution: 'OpenStreetMap'}).addTo(map);
+
+    const points = data.map((p) => {
+        return [p[0] * 1e-7, p[1] * 1e-7];
+    });
+
+    const heatmap = L.heatLayer(points, {radius: 5, blur: 5, max: 0.01}).addTo(map);
+
+    function refreshPanels() {
+        document.getElementById("radiusNum").innerText = heatmap.options.radius;
+        document.getElementById("blurNum").innerText = heatmap.options.blur;
+        document.getElementById("maxNum").innerText = heatmap.options.max;
+    }
+
+    refreshPanels();
+
+    function change(name, direction) {
+        let oldValue = heatmap.options[name];
+        let newValue;
+        if (direction > 0) {
+            newValue = oldValue * 1.5;
+        } else {
+            newValue = oldValue / 1.5;
+        }
+        newValue = Math.round(newValue * 100) / 100;
+        console.log(name, direction, oldValue, newValue);
+        heatmap.setOptions({[name]: newValue});
+        refreshPanels();
+    }
+</script>
+</body>
+</html>

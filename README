@@ -1,0 +1,5 @@
+Download Records-002.json from Google Takeout for Location history
+Run python3 convert.py to extract only points with some filters applied
+
+
+Inspired by https://github.com/bmorelli25/JavaScript-HeatMap-Creator and https://github.com/theopolisme/location-history-visualizer
